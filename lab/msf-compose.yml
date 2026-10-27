@@ -1,0 +1,20 @@
+# Metasploit RPC service (msfrpcd) on the redlab network — backs the MCP msf_* tools.
+# AUTHORIZED USE ONLY.
+#
+#   docker compose -f lab/msf-compose.yml up -d
+#
+# Exposes msfrpcd on redlab as host "msf:55553" (no SSL, password redmcp_msf).
+# The kali-security container reaches it over redlab; the port is NOT published
+# to the host. Change the password via MSF_PASSWORD (and the -P flag) for real use.
+services:
+  msf:
+    image: metasploitframework/metasploit-framework:latest
+    container_name: msf
+    networks: [redlab]
+    command: ["/usr/src/metasploit-framework/msfrpcd", "-P", "redmcp_msf", "-S", "-a", "0.0.0.0", "-p", "55553", "-f"]
+    restart: unless-stopped
+
+networks:
+  redlab:
+    external: true
+    name: redlab

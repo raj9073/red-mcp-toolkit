@@ -1,0 +1,7 @@
+# Tested direct dependencies. MCP 2.x removed mcp.server.fastmcp;
+# migrate the server explicitly before changing this compatibility pin.
+mcp[cli]==1.29.0
+pymetasploit3==1.0.6
+requests==2.34.2
+PyJWT[crypto]==2.15.1
+PyYAML==6.0.3

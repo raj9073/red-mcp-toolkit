@@ -1,0 +1,22 @@
+# Practice lab target: DVWA (Damn Vulnerable Web Application).
+# Self-contained intentionally-vulnerable web app for AUTHORIZED practice only.
+#
+#   docker compose -f lab/docker-compose.yml up -d
+#
+# Then reachable at:
+#   - http://localhost:8080      (from your host browser; default creds admin/password)
+#   - http://dvwa                (from the kali-security MCP container on the redlab network)
+#
+# First run: open http://localhost:8080, log in, click "Create / Reset Database".
+services:
+  dvwa:
+    image: vulnerables/web-dvwa:latest
+    container_name: dvwa
+    networks: [redlab]
+    ports:
+      - "127.0.0.1:8080:80"
+    restart: unless-stopped
+
+networks:
+  redlab:
+    name: redlab

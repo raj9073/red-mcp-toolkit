@@ -1,0 +1,38 @@
+# ============================================================================
+#  RED MCP — .gitignore
+#  The repo tracks ONLY the toolkit source (server, Docker, lab, verifier).
+#  Everything below is runtime, generated, or sensitive and must never be
+#  committed or pushed.
+# ============================================================================
+
+# --- Runtime engagement data -------------------------------------------------
+# Evidence, scan output, screenshots, loot (BloodHound zips, wordlists),
+# findings/reports, downloaded JS, AND any client/program PII or credentials.
+# The whole workspace is bind-mounted at runtime; it is not source.
+workspace/
+
+# --- Secrets / credentials (belt-and-suspenders) -----------------------------
+*.key
+*.pem
+*.token
+*.token.*
+.token
+.env
+.env.*
+*.secret
+.creds
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# --- Node --------------------------------------------------------------------
+node_modules/
+
+# --- OS / editor -------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/

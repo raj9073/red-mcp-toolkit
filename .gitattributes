@@ -1,0 +1,8 @@
+# Everything here ultimately runs inside Linux containers, so keep LF endings
+# even when checked out on Windows. Prevents CRLF from breaking entrypoint.sh /
+# Dockerfiles / Python at runtime.
+* text=auto eol=lf
+*.sh    text eol=lf
+*.py    text eol=lf
+*.yml   text eol=lf
+Dockerfile text eol=lf

@@ -1,0 +1,73 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Offline behavior checks on every push/PR. No targets or scanner binaries.
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install production Python dependencies for offline tests
+        run: python -m pip install -r requirements-test.txt
+
+      - name: Offline regression and real MCP protocol tests
+        run: python -m unittest discover -s tests -v
+        env:
+          KALI_TARGET_ALLOWLIST: ""
+          KALI_TARGET_DENYLIST: ""
+          ENGAGEMENT_ATTRIBUTION: ""
+
+      - name: Syntax gate (py_compile)
+        run: python -m py_compile kali-mcp/kali_security_server.py verify_server.py
+
+      - name: Lint Dockerfile (hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: kali-mcp/Dockerfile
+          failure-threshold: error
+
+  # Full Kali toolkit image (multi-GB) — validates the Dockerfile end to end.
+  # NOT run on push: kali-rolling's apt mirrors are flaky and the image is large
+  # for free runners, so this would red-X intermittently for reasons unrelated
+  # to the code. Run it on demand from the Actions tab (or `gh workflow run build`).
+  # A green offline check does not establish that this image builds or runs.
+  image-build:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free up runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+                      /opt/hostedtoolcache/CodeQL /usr/local/share/boost || true
+          docker image prune -af || true
+          df -h /
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image (validate Dockerfile)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./kali-mcp
+          push: false
+          load: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

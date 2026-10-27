@@ -1,0 +1,3 @@
+# Offline tests use the same pinned Python dependencies as production.
+# No Kali/scanner binaries or external targets are required.
+-r kali-mcp/requirements.txt

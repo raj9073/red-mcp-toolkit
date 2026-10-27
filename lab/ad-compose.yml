@@ -1,0 +1,24 @@
+# Vulnerable Samba Active Directory DC on the redlab network — AUTHORIZED LAB USE ONLY.
+#
+#   docker compose -f lab/ad-compose.yml up -d --build
+#
+# Realm REDLAB.LOCAL, DC "dc1". Reachable from the kali-security container over
+# redlab (by container name "dc1" and by its IP). Roastable accounts:
+#   test    / monkey    (AS-REP roastable — Kerberos pre-auth disabled)
+#   svc_sql / sunshine  (Kerberoastable — SPN MSSQLSvc/dc1.redlab.local:1433)
+#   j.doe   / password  (low-priv authenticated user)
+#   Administrator / Redlab123!  (domain admin)
+services:
+  dc1:
+    build: ./ad
+    image: redlab-samba-dc:latest
+    container_name: dc1
+    hostname: dc1
+    networks: [redlab]
+    cap_add: ["SYS_ADMIN", "NET_ADMIN"]
+    restart: unless-stopped
+
+networks:
+  redlab:
+    external: true
+    name: redlab

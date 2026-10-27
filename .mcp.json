@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "kali-security": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--network",
+        "redlab",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "-e",
+        "KALI_TARGET_ALLOWLIST=",
+        "-e",
+        "KALI_TARGET_DENYLIST=",
+        "-e",
+        "ENGAGEMENT_ATTRIBUTION=",
+        "-e",
+        "SCAN_TIMEOUT=300",
+        "-v",
+        "red-mcp-workspace:/workspace",
+        "kali-security-mcp-server:latest"
+      ]
+    }
+  }
+}
